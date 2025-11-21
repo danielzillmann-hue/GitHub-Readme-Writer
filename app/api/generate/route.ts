@@ -103,30 +103,29 @@ Generate a detailed README.md with these sections:
 - Focus on capabilities and benefits
 
 ## 4. 🏗️ Architecture
-- Create a Mermaid diagram showing system architecture
-- ABSOLUTELY CRITICAL MERMAID RULES - FOLLOW EXACTLY:
-  * ONLY use square brackets [ ] for node labels
-  * NEVER use parentheses ( ), curly braces { }, or any other brackets
-  * NEVER include <br>, <br/>, or any HTML tags
-  * NEVER use special characters like @, #, $, %, &, etc. in labels
-  * Keep labels SHORT - maximum 3 words
-  * Use ONLY letters, numbers, spaces, hyphens, and underscores in labels
-  * CORRECT example:
-    \`\`\`mermaid
-    graph TD
-        A[User Interface] --> B[API Layer]
-        B --> C[Database]
-        B --> D[Cache Service]
+- Create an ASCII art diagram showing the system architecture
+- Use simple box-drawing characters and arrows
+- Show main components and data flow
+- Example format:
     \`\`\`
-  * WRONG examples (DO NOT DO THIS):
-    \`\`\`mermaid
-    graph TD
-        A(User Interface) --> B[API]  ❌ NO PARENTHESES
-        A[User<br>Interface] --> B[API]  ❌ NO BR TAGS  
-        A[User (Admin)] --> B[API]  ❌ NO PARENTHESES IN LABELS
+    ┌─────────────┐
+    │   Client    │
+    └──────┬──────┘
+           │
+           ▼
+    ┌─────────────┐
+    │  API Server │
+    └──────┬──────┘
+           │
+      ┌────┴────┐
+      ▼         ▼
+    ┌────┐   ┌────────┐
+    │ DB │   │ Cache  │
+    └────┘   └────────┘
     \`\`\`
+- Keep it simple and clear
 - Only include if project has 3+ distinct components
-- If unsure about syntax, skip the diagram rather than risk errors
+- Use boxes (┌─┐│└┘), arrows (→ ← ↑ ↓ ▼ ▲), and lines (─ │ ┬ ┴ ├ ┤)
 
 ## 5. 🛠️ Tech Stack
 - List technologies, frameworks, and libraries
@@ -177,10 +176,29 @@ FORMATTING REQUIREMENTS:
 ✓ Use code blocks with language tags (\`\`\`bash, \`\`\`javascript, etc.)
 ✓ Use tables for structured data
 ✓ Use emojis only in section headers
-✓ Keep Mermaid diagrams simple with NO special characters in labels
+✓ Use ASCII art for architecture diagrams (simple and always renders correctly)
 ✓ Use bold (**text**) for emphasis
-✓ Ensure all Mermaid syntax is valid and will render on GitHub
+✓ Ensure all diagrams use plain text characters only
 
+Analyze the actual code and provide specific, accurate information. Avoid generic placeholders.`;
+
+        console.log("Calling Vertex AI with enhanced prompt...");
+        const model = getGeminiModel();
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.candidates?.[0].content.parts[0].text;
+
+        // Clean up any Mermaid diagrams to ensure valid syntax (if any slip through)
+        if (text) {
+            text = cleanMermaidDiagram(text);
+        }
+
+        console.log("README generated successfully");
+        return NextResponse.json({ readme: text });
+    } catch (error: any) {
+        console.error("Error generating content:", error);
+        console.error("Error details:", error.message, error.stack);
+        return NextResponse.json({
             error: "Failed to generate README",
             details: error.message
         }, { status: 500 });
