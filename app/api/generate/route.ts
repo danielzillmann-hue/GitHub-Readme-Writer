@@ -103,29 +103,29 @@ Generate a detailed README.md with these sections:
 - Focus on capabilities and benefits
 
 ## 4. 🏗️ Architecture
-- Create an ASCII art diagram showing the system architecture
-- Use simple box-drawing characters and arrows
-- Show main components and data flow
-- Example format:
+- Create a simple ASCII flow diagram showing the system architecture
+- Use a VERTICAL layout to prevent text wrapping in narrow viewports
+- Keep component names SHORT (max 15 characters)
+- Use simple characters: | for vertical lines, + for connections, --> for arrows
+- Example format (VERTICAL ONLY):
     \`\`\`
-    ┌─────────────┐
-    │   Client    │
-    └──────┬──────┘
-           │
-           ▼
-    ┌─────────────┐
-    │  API Server │
-    └──────┬──────┘
-           │
-      ┌────┴────┐
-      ▼         ▼
-    ┌────┐   ┌────────┐
-    │ DB │   │ Cache  │
-    └────┘   └────────┘
+    User/Client
+         |
+         v
+    API Gateway
+         |
+         v
+      Backend
+         |
+    +----+----+
+    |         |
+    v         v
+    DB      Cache
     \`\`\`
-- Keep it simple and clear
+- CRITICAL: Use VERTICAL flow only (top to bottom)
+- Keep total width under 30 characters
 - Only include if project has 3+ distinct components
-- Use boxes (┌─┐│└┘), arrows (→ ← ↑ ↓ ▼ ▲), and lines (─ │ ┬ ┴ ├ ┤)
+- Prioritize clarity over complexity
 
 ## 5. 🛠️ Tech Stack
 - List technologies, frameworks, and libraries
