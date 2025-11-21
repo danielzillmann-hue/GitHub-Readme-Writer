@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getRepoContent, getFileContent, getRepoInfo } from "@/lib/github";
 import { getGeminiModel } from "@/lib/gemini";
+import { cleanMermaidDiagram } from "@/lib/mermaid-cleaner";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -103,26 +104,29 @@ Generate a detailed README.md with these sections:
 
 ## 4. 🏗️ Architecture
 - Create a Mermaid diagram showing system architecture
-- Use ONLY simple node syntax - no special characters in labels
-- CRITICAL MERMAID RULES:
-  * Use simple alphanumeric labels only
-  * NO parentheses, brackets, or special characters in node labels
-  * NO line breaks (<br>) in labels
-  * Use underscores instead of spaces in node IDs
-  * Example of CORRECT syntax:
+- ABSOLUTELY CRITICAL MERMAID RULES - FOLLOW EXACTLY:
+  * ONLY use square brackets [ ] for node labels
+  * NEVER use parentheses ( ), curly braces { }, or any other brackets
+  * NEVER include <br>, <br/>, or any HTML tags
+  * NEVER use special characters like @, #, $, %, &, etc. in labels
+  * Keep labels SHORT - maximum 3 words
+  * Use ONLY letters, numbers, spaces, hyphens, and underscores in labels
+  * CORRECT example:
     \`\`\`mermaid
     graph TD
         A[User Interface] --> B[API Layer]
         B --> C[Database]
-        B --> D[External Service]
+        B --> D[Cache Service]
     \`\`\`
-  * Example of INCORRECT syntax (DO NOT USE):
+  * WRONG examples (DO NOT DO THIS):
     \`\`\`mermaid
     graph TD
-        A(User<br>Interface) --> B[API]  ❌ WRONG
+        A(User Interface) --> B[API]  ❌ NO PARENTHESES
+        A[User<br>Interface] --> B[API]  ❌ NO BR TAGS  
+        A[User (Admin)] --> B[API]  ❌ NO PARENTHESES IN LABELS
     \`\`\`
-- Only include if project has multiple components or services
-- Keep labels short and simple
+- Only include if project has 3+ distinct components
+- If unsure about syntax, skip the diagram rather than risk errors
 
 ## 5. 🛠️ Tech Stack
 - List technologies, frameworks, and libraries
@@ -177,20 +181,6 @@ FORMATTING REQUIREMENTS:
 ✓ Use bold (**text**) for emphasis
 ✓ Ensure all Mermaid syntax is valid and will render on GitHub
 
-Analyze the actual code and provide specific, accurate information. Avoid generic placeholders.`;
-
-        console.log("Calling Vertex AI with enhanced prompt...");
-        const model = getGeminiModel();
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.candidates?.[0].content.parts[0].text;
-
-        console.log("README generated successfully");
-        return NextResponse.json({ readme: text });
-    } catch (error: any) {
-        console.error("Error generating content:", error);
-        console.error("Error details:", error.message, error.stack);
-        return NextResponse.json({
             error: "Failed to generate README",
             details: error.message
         }, { status: 500 });
