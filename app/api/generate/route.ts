@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         const repoLanguage = repoInfo?.language || "Unknown";
         const repoTopics = repoInfo?.topics?.join(", ") || "None";
 
-        const prompt = `You are an expert technical writer who writes engaging, human-friendly documentation. Generate a comprehensive README.md file for this GitHub repository.
+        const prompt = `You are an expert technical writer creating professional documentation for a GitHub repository. Generate a comprehensive README.md file.
 
 Repository Information:
 - Name: ${repo}
@@ -76,85 +76,108 @@ ${Object.entries(fileContents).map(([name, content]) => `
 ${content}
 `).join('\n')}
 
-IMPORTANT WRITING GUIDELINES:
-- Write in a friendly, conversational tone as if explaining to a colleague
+WRITING GUIDELINES:
+- Use a professional, technical tone suitable for enterprise documentation
+- Write clear, precise sentences with appropriate technical terminology
 - Use proper Markdown formatting with - for bullet points (NOT * or asterisks)
-- Use emojis sparingly but appropriately (e.g., 🚀 for deployment, ⚡ for features, 📦 for installation)
-- Write clear, concise sentences without excessive jargon
-- Include code examples where helpful
-- Make it scannable with good use of headers and formatting
+- Use emojis sparingly in section headers only (e.g., 🚀 for deployment, ⚡ for features, 📦 for installation)
+- Include code examples with proper syntax highlighting
+- Ensure content is well-structured and scannable
 
-Please generate a detailed README.md that includes:
+Generate a detailed README.md with these sections:
 
-## 1. Project Title and Badge Section
-- Clear, engaging title
-- Add relevant badges (build status, version, license) if applicable
-- Brief tagline describing what it does
+## 1. Project Title and Badges
+- Clear, professional title
+- Relevant badges (build status, version, license) if applicable
+- Concise tagline describing the project's purpose
 
 ## 2. Overview
-- What problem does this solve?
-- Who is it for?
-- Key value proposition in 2-3 sentences
+- Problem statement and solution
+- Target audience
+- Key value proposition (2-3 sentences)
 
 ## 3. ✨ Features
 - List main features using - bullet points
-- Be specific based on the actual code
-- Focus on user benefits, not just technical details
+- Be specific based on actual code analysis
+- Focus on capabilities and benefits
 
 ## 4. 🏗️ Architecture
-- Create a Mermaid diagram showing the system architecture
-- Include main components, data flow, and integrations
-- Use this format:
-\`\`\`mermaid
-graph TD
-    A[Component A] --> B[Component B]
-    B --> C[Component C]
-\`\`\`
-- Only include if the project has multiple components or services
+- Create a Mermaid diagram showing system architecture
+- Use ONLY simple node syntax - no special characters in labels
+- CRITICAL MERMAID RULES:
+  * Use simple alphanumeric labels only
+  * NO parentheses, brackets, or special characters in node labels
+  * NO line breaks (<br>) in labels
+  * Use underscores instead of spaces in node IDs
+  * Example of CORRECT syntax:
+    \`\`\`mermaid
+    graph TD
+        A[User Interface] --> B[API Layer]
+        B --> C[Database]
+        B --> D[External Service]
+    \`\`\`
+  * Example of INCORRECT syntax (DO NOT USE):
+    \`\`\`mermaid
+    graph TD
+        A(User<br>Interface) --> B[API]  ❌ WRONG
+    \`\`\`
+- Only include if project has multiple components or services
+- Keep labels short and simple
 
 ## 5. 🛠️ Tech Stack
 - List technologies, frameworks, and libraries
-- Group by category (Frontend, Backend, Database, etc.)
+- Group by category (Frontend, Backend, Database, DevOps, etc.)
 - Use - bullet points
 
 ## 6. 📦 Installation
-- Clear step-by-step instructions
-- Include prerequisites
-- Provide actual commands
-- Use code blocks for commands
+
+### Prerequisites
+- List required software and versions
+
+### Setup Steps
+- Provide clear, numbered installation steps
+- Include actual commands in code blocks
+- Specify the working directory if relevant
 
 ## 7. 🚀 Usage
 - How to run the application
-- Include examples with code blocks
-- Show expected output where relevant
+- Include command examples with expected output
+- Provide configuration examples
 
 ## 8. ⚙️ Configuration
-- List environment variables needed
-- Explain what each one does
-- Provide example values (with placeholders for secrets)
+- List all environment variables
+- Explain purpose of each variable
+- Provide example values (use placeholders for secrets)
+- Use a table format:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| VAR_NAME | Purpose | \`value\` |
 
 ## 9. 📚 API Documentation (if applicable)
 - Document key endpoints
 - Show request/response examples
 - Use tables for parameters
+- Include authentication requirements
 
 ## 10. 🤝 Contributing
-- Brief guidelines for contributors
-- Link to CONTRIBUTING.md if it exists
+- Guidelines for contributors
+- Code style requirements
+- Pull request process
 
 ## 11. 📄 License
-- Mention the license if found in the code
+- State the license type if found
 
-FORMATTING RULES:
-✓ Use - for ALL bullet points (never use * or asterisks)
-✓ Use proper code blocks with language tags
+FORMATTING REQUIREMENTS:
+✓ Use - for ALL bullet points (never * or asterisks)
+✓ Use code blocks with language tags (\`\`\`bash, \`\`\`javascript, etc.)
 ✓ Use tables for structured data
-✓ Use emojis in section headers for visual appeal
-✓ Keep paragraphs short (2-3 sentences max)
-✓ Use bold for emphasis, not italics
-✓ Include a Mermaid architecture diagram if the project has multiple components
+✓ Use emojis only in section headers
+✓ Keep Mermaid diagrams simple with NO special characters in labels
+✓ Use bold (**text**) for emphasis
+✓ Ensure all Mermaid syntax is valid and will render on GitHub
 
-Make this README feel like it was written by a human developer who cares about good documentation, not a robot. Be specific to THIS project - analyze the actual code and provide real, actionable information.`;
+Analyze the actual code and provide specific, accurate information. Avoid generic placeholders.`;
 
         console.log("Calling Vertex AI with enhanced prompt...");
         const model = getGeminiModel();
